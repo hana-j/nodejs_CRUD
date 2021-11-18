@@ -14,13 +14,19 @@ router.get('/', function(req, res){
 
 //New
 router.get('/join', function(req, res){
-    res.render('users/join');
+    const user= req.flash('user')[0] || {};
+    const errors = req.flash('errors')[0] || {};
+    res.render('users/join',{user:user, errors:errors});
 });
 
 //join
 router.post('/', function(req, res){
     User.create(req.body, function(err, user){
-        if(err) return res.json(err);
+        if(err) {
+            req.flash('user', req.body);
+            req.flash('errors', parseError(err)); //error객체의 형식이 다 다르므로 parseError라는 함수를 따로 만들어서 분석해 일정한 형식으로 만들어준다.
+            return res.redirect('/users/new')
+        }
         res.redirect('/users');
     });
 });
@@ -33,7 +39,7 @@ router.get('/:username', function(req, res){
     });
 });
 
-//edit
+//edit //11-18 여기부터 다시 해야함 
 router.get('/:username/edit', function(req, res){
     User.findOne({username:req.params.username}, function(err, user){
         if(err) return res.json(err);

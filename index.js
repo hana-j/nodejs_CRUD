@@ -22,8 +22,8 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname+'/public'));
 app.use(bodyPaser.json());
 app.use(bodyPaser.urlencoded({extended:true}));
-app.use(flash()); 
-app.use(session({secret:'MySecret', resave:true, saveUninitialized:true})); 
+app.use(flash());  //flash 초기화 
+app.use(session({secret:'hanaSecret', resave:true, saveUninitialized:true})); 
 app.use(methodOverride('_method'));
 app.use(passport.initialize());
 app.use(passport.session());
