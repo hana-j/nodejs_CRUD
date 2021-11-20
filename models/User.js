@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 var userSchema = mongoose.Schema({
     username:{
       type:String,
-      required:[true,'아이디는 필수입니다.'],
+      required:[true,'아이디는 필수입니다.'],    //[]에 true, false를 넣을 경우 기본 에러메세지를 변경할 수있다.
       match:[/^.{4,12}$/,'Should be 4-12 characters!'], 
       trim:true, // 문자열앞뒤에 빈칸이 있는 경우 빈칸을 제거해주는 옵션 
       unique:true
@@ -31,9 +31,9 @@ var userSchema = mongoose.Schema({
   });
 
 //virtuals : 회원가입, 회원정보 수정을 위해 필요하지만 db에는 저장할 필요없는 값을 확인하고 정의
-userSchema.virtual('passwordConfirm')
-    .get(function(){return this._passwordComfirm;})
-    .set(function(value){this._passwordComfirm=value;});
+userSchema.virtual('passwordConfirmation')
+    .get(function(){return this._passwordComfirmation;})
+    .set(function(value){this._passwordComfirmation=value;});
 
 userSchema.virtual('originalPassword')
     .get(function(){return this._orginalPassword;})
@@ -48,14 +48,14 @@ userSchema.virtual('newPassword')
     .set(function(value){this._newPassword;});
 
 //password validation
-const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/; // 2-1
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/; 
 const passwordRegexErrorMessage = '8자리이상 숫자와 문자조합으로 작성해주세요';
 userSchema.path('password').validate(function (v) {
-    const user = this;
+    const user = this;  //this는 user model이다. 
 
     if(user.isNew){
         if(!user.passwordConfirmation){
-          user.invalidate('passwordConfirmation', 'Password Confirmation is required.');
+          user.invalidate('passwordConfirmation', 'Password Confirmation is required.'); //model.invalidate함수(항목이름, 에러메세지)
         }
         if(!passwordRegex.test(user.password)){ 
           user.invalidate('password', passwordRegexErrorMessage); 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const util = require('../util');
 
 //Index
 router.get('/', function(req, res){
@@ -22,12 +23,12 @@ router.get('/join', function(req, res){
 //join
 router.post('/', function(req, res){
     User.create(req.body, function(err, user){
-        if(err) {
+        if(err){
             req.flash('user', req.body);
-            req.flash('errors', parseError(err)); //error객체의 형식이 다 다르므로 parseError라는 함수를 따로 만들어서 분석해 일정한 형식으로 만들어준다.
-            return res.redirect('/users/new')
+            req.flash('errors', util.parseError(err)); //error객체의 형식이 다 다르므로 parseError라는 함수를 따로 만들어서 분석해 일정한 형식으로 만들어준다.
+            return res.redirect('/users/join')
         }
-        res.redirect('/users');
+        res.redirect('/login');
     });
 });
 
@@ -41,10 +42,16 @@ router.get('/:username', function(req, res){
 
 //edit //11-18 여기부터 다시 해야함 
 router.get('/:username/edit', function(req, res){
-    User.findOne({username:req.params.username}, function(err, user){
-        if(err) return res.json(err);
-        res.render('users/edit', {user:user});
-    });
+    const user = req.flash('user')[0];
+    const errors =  req.flash('errors')[0] || {};
+    if(!user){
+        User.findOne({username:req.params.username}, function(err, user){
+            if(err) return res.json(err);
+            res.render('users/edit', {username:req.params.username, user:user, errors:errors});
+        });
+    }else{
+        res.render('users/edit', {username:req.params.username, user:user, errors:errors});
+    }
 });
 
 //update
@@ -61,7 +68,11 @@ router.put('/:username', function(req, res, next){
             }
 
             user.save(function(err, user){
-                if(err) return res.json(err);
+                if(err) {
+                    req.flash('user', req.body);
+                    req.flash('errors', util.parseError(err));
+                    return res.redirect('/users/'+req.params.username+'/edit');
+                }
                 res.redirect('/users/'+user.username);
             });
         });
@@ -76,4 +87,7 @@ router.delete('/:username', function(req, res){
 })
 
 module.exports = router;
+
+
+
 
