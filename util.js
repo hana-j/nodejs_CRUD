@@ -28,7 +28,7 @@ util.isLoggedin = function(req, res, next){
 }
 
 util.noPermission = function(req, res){
-    req.flsah('errors', {login:"권한이 없습니다."});
+    req.flash('errors', {login:"권한이 없습니다."});
     req.logout();
     res.redirect('/login');
 }
