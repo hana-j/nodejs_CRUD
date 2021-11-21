@@ -3,15 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const util = require('../util');
 
-//Index
-router.get('/', function(req, res){
-    User.find({})
-        .sort({username:1})
-        .exec(function(err, users){
-            if(err) return res.json(err);
-            res.render('users/index', {users:users});
-        });
-});
+
 
 //New
 router.get('/join', function(req, res){
@@ -33,7 +25,7 @@ router.post('/', function(req, res){
 });
 
 //show
-router.get('/:username', function(req, res){
+router.get('/:username', util.isLoggedin, checkPermission, function(req, res){
     User.findOne({username:req.params.username}, function(err, user){
         if(err) return res.json(err);
         res.render('users/show',{user:user});
@@ -41,7 +33,7 @@ router.get('/:username', function(req, res){
 });
 
 //edit //11-18 여기부터 다시 해야함 
-router.get('/:username/edit', function(req, res){
+router.get('/:username/edit', util.isLoggedin, checkPermission, function(req, res){
     const user = req.flash('user')[0];
     const errors =  req.flash('errors')[0] || {};
     if(!user){
@@ -55,7 +47,7 @@ router.get('/:username/edit', function(req, res){
 });
 
 //update
-router.put('/:username', function(req, res, next){
+router.put('/:username', util.isLoggedin, checkPermission, function(req, res, next){
     User.findOne({username:req.params.username})
         .select('password')
         .exec(function(err, user){
@@ -78,13 +70,15 @@ router.put('/:username', function(req, res, next){
         });
 });
 
-//delete
-router.delete('/:username', function(req, res){
-    User.deleteOne({ussername:req.params.username}, function(err){
+function checkPermission(req, res, next){
+    User.findOne({username:req.params.username} , function(err, user){
         if(err) return res.json(err);
-        res.redirect('/users');
+        if(user.id != req.user.id) return util.noPermission(req, res);
+
+        next();
     });
-})
+    
+}
 
 module.exports = router;
 

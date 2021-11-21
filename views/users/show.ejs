@@ -28,11 +28,13 @@
       </form>
 
       <div>
-        <a class="btn btn-primary" href="/users">뒤로가기</a>
+        <a class="btn btn-primary" href="/" style="background-color: #85AF4B; border: none;">뒤로가기</a>
+        <% if(isAuthenticated && currentUser.id == user.id) { %>
         <a class="btn btn-primary" href="/users/<%= user.username %>/edit" style="background-color: #85AF4B; border: none;">수정</a>
         <form action="/users/<%= user.username %>?_method=delete" method="post" class="d-inline" style="background-color: #85AF4B; border: none;">
-          <a class="btn btn-primary" href="javascript:void(0)" onclick="confirm('탈퇴하시겠습니까?😢')?this.parentElement.submit():null;">탈퇴</a>
+          <a class="btn btn-primary" href="javascript:void(0)" onclick="confirm('탈퇴하시겠습니까?😢')?this.parentElement.submit():null;" style="background-color: #85AF4B; border: none;">탈퇴</a>
         </form>
+        <% } %>
       </div>
 
     </div>

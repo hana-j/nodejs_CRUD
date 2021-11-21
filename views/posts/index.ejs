@@ -44,7 +44,9 @@
       </table>
 
       <div>
-        <a class="btn btn-primary" href="/posts/new" style="background-color: #85AF4B; border: none;">New</a>
+        <% if(isAuthenticated){ %><!-- isAuthenticated 함수는 index.js속에 있다 req.locals에 들어있어서 ejs에서 바로 사용가능-->
+        <a class="btn btn-primary" href="/posts/new" style="background-color: #85AF4B; border: none;">글쓰기</a>
+        <% }%>
       </div>
 
     </div>

@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const Post = require('../models/Post');
+const util = require('../util');
 
 //Index
 router.get('/', function(req, res){
@@ -15,12 +16,12 @@ router.get('/', function(req, res){
 });
 
 //New post
-router.get('/new', function(req, res){
+router.get('/new', util.isLoggedin, function(req, res){
     res.render('posts/new');
 });
 
 //write
-router.post('/', function(req, res){
+router.post('/', util.isLoggedin, function(req, res){
     req.body.author= req.user._id;
     Post.create(req.body, function(err, post){
         if(err) return res.json(err);
@@ -46,7 +47,7 @@ router.get('/:id/edit', function(req, res){
     });
 });
 //수정
-router.put('/:id', function(req, res){
+router.put('/:id', util.isLoggedin, function(req, res){
     req.body.updatedAt = Date.now();
     Post.findByIdAndUpdate({_id:req.params.id}, req.body, function(err, post){
         if(err) return res.json(err);
@@ -55,11 +56,19 @@ router.put('/:id', function(req, res){
     });
 });
 //delete
-router.delete('/:id', function(req, res){
+router.delete('/:id', util.isLoggedin, function(req, res){
     Post.deleteOne({_id:req.params.id}, function(err){
         if(err) return res.json(err);
         res.redirect('/posts');
     });
 });
 
+function checkPermission(req, res,next){
+    Post.findOne({_id:req.params.id}, function(err, post){
+        if(err) return res.json(err);
+        if(post.author != req.user.id) return util.noPermission(req, res);
+
+        next();       //본인이 작성한 post인 경우에만 계속 해당 route를 사용할 수 있습니다.
+    });
+}
 module.exports = router;
