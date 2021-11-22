@@ -5,15 +5,29 @@ const Post = require('../models/Post');
 const util = require('../util');
 
 //Index
-router.get('/', function(req, res){
-    Post.find({})
-    .populate('author')     //Model.populate() 함수는 relationship이 형성되어 있는 항목의 값을 생성해준다.
-    .sort('-createdAt')
-    .exec(function(err, posts){
-        if(err) return res.json(err);
-        res.render('posts/index', {posts:posts});
+router.get('/', async function(req, res){ // 1
+    var page = Math.max(1, parseInt(req.query.page));   // 2
+    var limit = Math.max(1, parseInt(req.query.limit)); // 2
+    page = !isNaN(page)?page:1;                         // 3
+    limit = !isNaN(limit)?limit:10;                     // 3
+  
+    var skip = (page-1)*limit; // 4
+    var count = await Post.countDocuments({}); // 5
+    var maxPage = Math.ceil(count/limit); // 6
+    var posts = await Post.find({}) // 7
+      .populate('author')
+      .sort('-createdAt')
+      .skip(skip)   // 8
+      .limit(limit) // 8
+      .exec();
+  
+    res.render('posts/index', {
+      posts:posts,
+      currentPage:page, // 9
+      maxPage:maxPage,  // 9
+      limit:limit       // 9
     });
-});
+  });
 
 //New post
 router.get('/new', util.isLoggedin, function(req, res){

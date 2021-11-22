@@ -48,6 +48,44 @@
         <a class="btn btn-primary" href="/posts/new" style="background-color: #85AF4B; border: none;">글쓰기</a>
         <% }%>
       </div>
+      <nav class="col-8">
+        <% 
+          const offset = 2; <!-- 페이지 개수-->
+          const previousBtnEnabled = currentPage>1; <!-- 이전페이지-->
+          const nextBtnEnabled = currentPage<maxPage; 
+        %>
+<!-- 3 --><ul class="pagination pagination-sm justify-content-center align-items-center h-100 mb-0">            <li class="page-item <%= previousBtnEnabled?'':'disabled' %>">
+            <a class="page-link" href="/posts?page=<%= currentPage-1 %>&limit=<%= limit %>" <%= previousBtnEnabled?'':'tabindex=-1' %>>«</a>
+          </li>
+          <% for(i=1;i<=maxPage;i++){ %>
+            <% if(i==1 || i==maxPage || (i>=currentPage-offset && i<=currentPage+offset)){ %>
+              <li class="page-item <%= currentPage==i?'active':'' %>"><a class="page-link" href="/posts?page=<%= i %>&limit=<%= limit %>"> <%= i %> </a></li>
+            <% } else if(i==2 || i==maxPage-1){ %>
+              <li><a class="page-link">...</a></li>
+            <% } %>
+          <% } %>
+          <li class="page-item <%= nextBtnEnabled?'':'disabled' %>">
+            <a class="page-link" href="/posts?page=<%= currentPage+1 %>&limit=<%= limit %>" <%= nextBtnEnabled?'':'tabindex=-1' %>>»</a>
+          </li>
+        </ul>
+      </nav>
+
+    </div>
+
+    <form action="/posts" method="get"> <!-- 4 -->
+      <div class="form-row">
+
+        <div class="form-group col-3" style="margin-left: 55%;">
+          <label>게시글 갯수</label>
+          <select name="limit" class="custom-select" onchange="this.parentElement.parentElement.parentElement.submit()">
+            <option value="5" <%= limit==5?'selected':'' %>>5 posts</option>
+            <option value="10" <%= limit==10?'selected':'' %>>10 posts</option>
+            <option value="20" <%= limit==20?'selected':'' %>>20 posts</option>
+          </select>
+        </div>
+
+      </div>
+    </form>     
 
     </div>
   </body>
