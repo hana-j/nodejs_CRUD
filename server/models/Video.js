@@ -34,7 +34,7 @@ const videoSchema = mongoose.Schema({
     thumbnail: {
         type: String
     }
-}, { timestamps: true }) //12/3
+}, { timestamps: true }) 
 
 const Video = mongoose.model('Video', videoSchema);
 module.exports = Video;
