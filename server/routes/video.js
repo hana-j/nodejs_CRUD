@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Video = require('../models/Video');
-const multer = require('multer');
-var ffmpeg = require('fluent-ffmpeg');
+const multer = require('multer');      //비디오 업로드
+var ffmpeg = require('fluent-ffmpeg');  //png파일
 const { auth } = require("../middleware/auth");
 
 //Storage multer config
