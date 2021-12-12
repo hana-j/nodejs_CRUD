@@ -44,6 +44,7 @@ function VideoUploadPage(props) {
     const onCategoryChange = (e) =>{
         setCategory(e.currentTarget.value)
     }
+    //비디오 파일 업로드
     const onDrop = (files)=>{
         let formData = new FormData;
         const config = {
@@ -84,7 +85,7 @@ function VideoUploadPage(props) {
     }
 
   
-
+    //비디오 정보 업로드
     const onSubmit = (e)=>{
         e.preventDefault();
         const variables = {

@@ -41,7 +41,7 @@ router.post('/uploadfiles', (req, res)=>{  //req는 클라이언트에서 보내
     })
     
 })
-router.post('/uploadVideo', (req, res)=>{  //req는 클라이언트에서 보내준 파일
+router.post('/uploadVideo', (req, res)=>{  //req는 클라이언트에서 보내준 파일정보
     //비디오를 정보들을 저장한다.
 
     const video = new Video(req.body)  //req.body 안에 클라이언트에서 보낸 모든 variable 가져옴 
@@ -88,5 +88,30 @@ router.post('/thumbnail', (req, res)=>{  //req는 클라이언트에서 보내�
         filename:'thumbnail-%b.png'
     })
 })
+
+
+router.get('/getVideos', (req, res)=>{
+    //비디오를 DB에서 가져와서 클라이언트에 보내기
+    Video.find()
+        .populate('writer') //User모델에 있는 모든 정보를 가져온다.
+        .exec((err, videos)=>{
+            if(err) return res.status(400).send(err);
+            res.status(200).json({success:true, videos});
+            console.log(videos);
+        })
+})
+//상세페이지
+router.post('/getVideoDetail', (req, res)=>{
+    let videoId = req.body.videoId
+    //비디오를 DB에서 가져와서 클라이언트에 보내기
+    Video.findOne({"_id":videoId})
+        .populate('writer') //User모델에 있는 모든 정보를 가져온다.
+        .exec((err, VideoDatail)=>{
+            if(err) return res.status(400).send(err);
+            res.status(200).json({success:true, VideoDatail});
+            console.log(VideoDatail);
+        })
+})
+
 
 module.exports = router;
